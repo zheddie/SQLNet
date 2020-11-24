@@ -16,14 +16,14 @@ class WordEmbedding(nn.Module):
         self.SQL_TOK = SQL_TOK
 
         if trainable:
-            print "Using trainable embedding"
+            print("Using trainable embedding")
             self.w2i, word_emb_val = word_emb
             self.embedding = nn.Embedding(len(self.w2i), N_word)
             self.embedding.weight = nn.Parameter(
                     torch.from_numpy(word_emb_val.astype(np.float32)))
         else:
             self.word_emb = word_emb
-            print "Using fixed embedding"
+            print("Using fixed embedding")
 
 
     def gen_x_batch(self, q, col):
@@ -32,9 +32,9 @@ class WordEmbedding(nn.Module):
         val_len = np.zeros(B, dtype=np.int64)
         for i, (one_q, one_col) in enumerate(zip(q, col)):
             if self.trainable:
-                q_val = map(lambda x:self.w2i.get(x, 0), one_q)
+                q_val = list(map(lambda x:self.w2i.get(x, 0), one_q))
             else:
-                q_val = map(lambda x:self.word_emb.get(x, np.zeros(self.N_word, dtype=np.float32)), one_q)
+                q_val = list(map(lambda x:self.word_emb.get(x, np.zeros(self.N_word, dtype=np.float32)), one_q))
             if self.our_model:
                 if self.trainable:
                     val_embs.append([1] + q_val + [2])  #<BEG> and <END>
